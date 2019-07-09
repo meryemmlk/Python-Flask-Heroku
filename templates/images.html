@@ -1,0 +1,52 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}Database images{% endblock %}
+
+
+{% block content %}
+
+<div class="container">
+
+	{% with messages = get_flashed_messages() %}
+		{% if messages %}
+			<div class="alert alert-danger" role="alert">
+				<ul>
+					{% for message in messages %}
+						<li>{{ message }}</li>
+					{% endfor %}
+				</ul>
+			</div>
+		{% endif %}
+	{% endwith %}
+
+	<p>Images</p>			
+		<div class="row text-center text-lg-left">
+			{% for n in images %}
+			<form action="/" method="POST">
+				<div class="col-lg-3 col-md-4 col-xs-6">
+					<a href="{{config.S3_LOCATION}}/{{n.Key}}" class="d-block mb-4 h-100">
+						<img class="img-fluid img-thumbnail"  src={{config.S3_LOCATION}}/{{n.Key}}></a>
+						{% if current_user.is_authenticated %}
+						<input type=hidden name="delete" value={{n.Key}}>
+					<button type="submit" class="btn btn-primary" name={{n.Key}}>Delete</button>
+						{% endif %}
+				</div>
+			</form>
+			{% endfor %}	
+		</div>
+
+		{% if current_user.is_authenticated %}
+		<form action="/" method="POST" enctype="multipart/form-data">
+			<div class="form-group">
+					<label for="user_file">Upload Your File</label>
+					<input type="file" class="form-control" placeholder="Filename" name="user_file">
+			</div>
+			<button type="submit" class="btn btn-primary">Submit</button>
+		</form>
+		{% else %}
+			<a href="/login">Login to upload or delete images</a>
+		{% endif %}
+	
+</div>
+
+{% endblock %}
